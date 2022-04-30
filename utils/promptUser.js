@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const db = require("../db/connection.js");
-const cTable = require('console.table');
+const cTable = require("console.table");
 
 // Add a Department
 const addDepartment = function () {
@@ -15,7 +15,7 @@ const addDepartment = function () {
         `INSERT INTO departments (department) VALUES ('${answers.name}')`,
         function (err, result) {
           if (err) throw err;
-          console.log("1 record inserted");
+          console.log(`Added ${answers.name} to the database.`);
           promptUser();
         }
       );
@@ -60,7 +60,7 @@ const addRole = function () {
             VALUES ('${roleTitle}','${roleSalary}','${roleDepartmentId}')`,
             function (err, result) {
               if (err) throw err;
-              console.log("1 record inserted");
+              console.log(`Added ${roleTitle} to the database.`);
               promptUser();
             }
           );
@@ -109,7 +109,7 @@ const addEmployee = function () {
             VALUES ('${empFirst}','${empLast}','${empRole}','${empManager}')`,
             function (err, result) {
               if (err) throw err;
-              console.log("1 record inserted");
+              console.log(`Added ${empFirst} ${empLast} to the database.`);
               promptUser();
             }
           );
@@ -143,7 +143,7 @@ const deleteDepartment = function () {
               WHERE id = ${Id}`,
             function (err, result) {
               if (err) throw err;
-              console.log("1 record deleted");
+              console.log(`Deleted ${answers.department} from the database.`);
               promptUser();
             }
           );
@@ -173,7 +173,7 @@ const deleteRole = function () {
               WHERE id = ${Id}`,
             function (err, result) {
               if (err) throw err;
-              console.log("1 record deleted");
+              console.log(`Deleted ${answers.role} from the database.`);
               promptUser();
             }
           );
@@ -205,7 +205,7 @@ const deleteEmployee = function () {
               WHERE id = ${Id}`,
             function (err, result) {
               if (err) throw err;
-              console.log("1 record deleted");
+              console.log(`Deleted ${answers.role} from the database`);
               promptUser();
             }
           );
@@ -236,7 +236,7 @@ const updateDepartment = function () {
           WHERE id = ${parseInt(answers.oldName)}`,
         function (err, result) {
           if (err) throw err;
-          console.log("1 record updated");
+          console.log(`Updated ${answers.oldName} to ${answers.newName} in the database.`);
           promptUser();
         }
       );
@@ -279,32 +279,22 @@ const updateRole = function () {
             WHERE id = ${parseInt(answers.oldRole)}`,
         function (err, result) {
           if (err) throw err;
-          console.log("1 record updated");
+          console.log(`Updated ${answers.oldRole} to ${answers.newTitle} in the database.`);
           promptUser();
         }
       );
     });
 };
 
-// Update an Employee
+// Update an Employee Role
 const updateEmployee = function () {
   inquirer
     .prompt([
       {
         name: "oldEmployee",
         type: "list",
-        message: "Which employee would you like to update?",
+        message: "Which employee's role would you like to update?",
         choices: employeeChoices,
-      },
-      {
-        name: "new_first_name",
-        type: "text",
-        message: "What is the first name of the employee?",
-      },
-      {
-        name: "new_last_name",
-        type: "text",
-        message: "What is the last name of the employee?",
       },
       {
         name: "new_role",
@@ -312,55 +302,84 @@ const updateEmployee = function () {
         message: "What is the employees role?",
         choices: roleChoices,
       },
-      {
-        name: "new_manager",
-        type: "list",
-        message: "Who is the employees manager?",
-        choices: employeeChoices,
-      },
     ])
     .then((answers) => {
       db.query(
         `UPDATE employees 
-          SET first_name = '${answers.new_first_name}', last_name = '${
-          answers.new_last_name
-        }', role_id = '${parseInt(answers.new_role)}', manager_id = '${parseInt(
-          answers.new_manager
-        )}' 
+          SET role_id = '${parseInt(answers.new_role)}'
             WHERE id = ${parseInt(answers.oldEmployee)}`,
         function (err, result) {
           if (err) throw err;
-          console.log("1 record updated");
+          console.log(`Updated ${answers.oldEmployee} to ${answers.newName} in the database.`);
           promptUser();
         }
       );
     });
 };
 
+// Update an Employee Manager
+const updateManager = function () {
+    inquirer
+      .prompt([
+        {
+          name: "Employee",
+          type: "list",
+          message: "Which employee's manager would you like to update?",
+          choices: employeeChoices,
+        },
+        {
+            name: "newManager",
+            type: "list",
+            message: "Who is the employees new manager?",
+            choices: employeeChoices,
+        },
+      ])
+      .then((answers) => {
+        db.query(
+          `UPDATE employees 
+            SET manager_id = '${parseInt(answers.newManager)}'
+              WHERE id = ${parseInt(answers.Employee)}`,
+          function (err, result) {
+            if (err) throw err;
+            console.log(`Updated ${answers.Employee}'s manager to ${answers.newManager} in the database.`);
+            promptUser();
+          }
+        );
+      });
+  };
+
 // View All Departments
-const viewDepartments = function() {
-    db.promise().query(`
-    SELECT * FROM departments;`)
-    .then( ([rows,fields]) => {
+const viewDepartments = function () {
+  db.promise()
+    .query(
+      `
+    SELECT * FROM departments;`
+    )
+    .then(([rows, fields]) => {
       console.table(rows);
       promptUser();
     });
 };
 
 // View All Roles
-const viewRoles = function() {
-    db.promise().query(`
-    SELECT * FROM roles;`)
-    .then( ([rows,fields]) => {
+const viewRoles = function () {
+  db.promise()
+    .query(
+      `
+    SELECT * FROM roles;`
+    )
+    .then(([rows, fields]) => {
       console.table(rows);
       promptUser();
     });
 };
 
 // View All Employees
-const viewEmployees = function() {
-    console.log('testingtesting123');
-    db.promise().query(`
+const viewEmployees = function () {
+  console.log("testingtesting123");
+  db.promise()
+    .query(
+      `
     SELECT 
     employees.id,
         employees.first_name,
@@ -376,8 +395,9 @@ const viewEmployees = function() {
     ON employees.role_id = roles.id
     LEFT OUTER JOIN departments 
     ON roles.department_id = departments.id;
-    `)
-    .then( ([rows,fields]) => {
+    `
+    )
+    .then(([rows, fields]) => {
       console.table(rows);
     });
 };
@@ -400,15 +420,14 @@ const promptUser = function () {
         "View All Departments",
         "Add Department",
         "Delete Department",
-        "Update Department",
         "View All Roles",
         "Add Role",
         "Delete Role",
-        "Update Role",
         "View All Employees",
         "Add Employee",
         "Delete Employee",
-        "Update Employee",
+        "Update Employee Role",
+        "Update Employee Manager",
       ],
     })
     .then(getStuff())
@@ -429,8 +448,10 @@ const promptUser = function () {
         updateDepartment();
       } else if (answers2.choice === "Update Role") {
         updateRole();
-      } else if (answers2.choice === "Update Employee") {
+      } else if (answers2.choice === "Update Employee Role") {
         updateEmployee();
+      } else if (answers2.choice === "Update Employee Manager") {
+        updateManager();
       } else if (answers2.choice === "View All Departments") {
         viewDepartments();
       } else if (answers2.choice === "View All Roles") {

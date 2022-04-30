@@ -1,21 +1,18 @@
-const cTable = require('console.table');
-const { promptUser } = require('./utils/promptUser.js');
-const express = require('express');
-const db = require('./db/connection.js');
-
+const cTable = require("console.table");
+const { promptUser } = require("./utils/promptUser.js");
+const express = require("express");
+const db = require("./db/connection.js");
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-
-
-
-
-// Get all employees on startup
-const getEmployees = function() {
-  db.promise().query(`
+// Get all employees function
+const getEmployees = function () {
+  db.promise()
+    .query(
+      `
   SELECT 
-  employees.id,
+      employees.id,
       employees.first_name,
       employees.last_name,
       roles.title,
@@ -29,31 +26,24 @@ const getEmployees = function() {
   ON employees.role_id = roles.id
   LEFT OUTER JOIN departments 
   ON roles.department_id = departments.id;
-  `)
-  .then( ([rows,fields]) => {
-    console.table(rows);
-  })
-  // Prompt the User
-  .then(promptUser)
-  .catch(console.log)
-  };
+  `
+    )
+    .then(([rows, fields]) => {
+      console.table(rows);
+    })
+    // Prompt the User
+    .then(promptUser)
+    .catch(console.log);
+};
 // End get employees function
 
-
 // Start server after DB connection
-
-db.connect(err => {
-    if (err) throw err;
-    console.log('Database connected.');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-
-      getEmployees();
-      
-    });
+db.connect((err) => {
+  if (err) throw err;
+  console.log("Database connected.");
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    // Show all employees when the server starts
+    getEmployees();
   });
-
-
-  
-
-// Begin Inquirer Code
+});
