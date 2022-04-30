@@ -428,6 +428,7 @@ const promptUser = function () {
         "Delete Employee",
         "Update Employee Role",
         "Update Employee Manager",
+        "View Department Budgets",
       ],
     })
     .then(getStuff())
@@ -458,7 +459,7 @@ const promptUser = function () {
         viewRoles();
       } else if (answers2.choice === "View All Employees") {
         viewEmployees();
-      }
+      } 
     })
     .catch((err) => console.log(err));
 };
