@@ -1,4 +1,4 @@
-### Employee Manager
+# Easy Express Employee Tracker
 
 ## Description
 
