@@ -3,7 +3,7 @@ const { promptUser } = require("./utils/promptUser.js");
 const express = require("express");
 const db = require("./db/connection.js");
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 const app = express();
 
 // Get all employees function

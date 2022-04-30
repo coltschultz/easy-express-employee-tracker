@@ -51,7 +51,7 @@ const addRole = function () {
           )}'`
         )
         .then(([rows, fields]) => {
-          roleDepartmentId = parseInt(rows.map((a) => a.id));
+          roleDepartmentId = parseInt(answers.department);
           roleSalary = parseInt(answers.role_salary);
           roleTitle = answers.role_title;
 
@@ -299,7 +299,7 @@ const updateEmployee = function () {
       {
         name: "new_role",
         type: "list",
-        message: "What is the employees role?",
+        message: "What is the employees new role?",
         choices: roleChoices,
       },
     ])
@@ -310,7 +310,7 @@ const updateEmployee = function () {
             WHERE id = ${parseInt(answers.oldEmployee)}`,
         function (err, result) {
           if (err) throw err;
-          console.log(`Updated ${answers.oldEmployee} to ${answers.newName} in the database.`);
+          console.log(`Updated ${answers.oldEmployee}'s role to ${answers.new_role} in the database.`);
           promptUser();
         }
       );
@@ -399,6 +399,7 @@ const viewEmployees = function () {
     )
     .then(([rows, fields]) => {
       console.table(rows);
+      promptUser();
     });
 };
 
@@ -428,7 +429,6 @@ const promptUser = function () {
         "Delete Employee",
         "Update Employee Role",
         "Update Employee Manager",
-        "View Department Budgets",
       ],
     })
     .then(getStuff())
